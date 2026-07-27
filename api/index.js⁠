@@ -1,4 +1,7 @@
-module.exports = (req, res) => {
+module.exports = async (req, res) => {
+  // ブラウザにHTMLとして認識させるためのヘッダー指定
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+
   if (req.method === 'POST') {
     let body = '';
     req.on('data', chunk => { body += chunk.toString(); });
@@ -18,7 +21,6 @@ module.exports = (req, res) => {
         const data = await response.json();
         const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text || "エラーが発生しました";
 
-        res.setHeader('Content-Type', 'text/html; charset=utf-8');
         res.status(200).send(`
           <!DOCTYPE html>
           <html>
@@ -42,7 +44,7 @@ module.exports = (req, res) => {
             <div class="reply">
               <strong>回答:</strong><br>${replyText.replace(/</g, "&lt;")}
             </div>
-            <p><a href="/">← 次の質問をする</a></p>
+            <p><a href="/api">← 次の質問をする</a></p>
           </body>
           </html>
         `);
@@ -51,7 +53,6 @@ module.exports = (req, res) => {
       }
     });
   } else {
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.status(200).send(`
       <!DOCTYPE html>
       <html>
